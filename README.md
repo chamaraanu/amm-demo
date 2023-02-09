@@ -8,6 +8,9 @@ USDC= Swapping from token (USDC)<br>
 LINK= Swapping to token (LINK)<br>
 SWAP_ADDRESS= Once the swap is deployed<br>
 
+### Start off
+% npm install<br>
+
 ### Creating a new token
 % npx hardhat run scripts/swap-transactions.js --network goerli
 
