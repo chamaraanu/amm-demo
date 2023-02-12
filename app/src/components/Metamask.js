@@ -5,6 +5,7 @@ import Swap from './Swap';
 
 import { ethers } from "ethers";
 import Token from "./token";
+import Layout from './Layout';
 
 class Metamask extends Component {
   constructor(props) {
@@ -40,6 +41,7 @@ class Metamask extends Component {
       )
     } else {
       return (
+        <Layout>
         <div>
           <h>Welcome {this.state.selectedAddress}</h>
           <p>Your ETH Balance is: {this.state.balance}</p>
@@ -48,6 +50,7 @@ class Metamask extends Component {
             <Swap />
           </div>
         </div>
+        </Layout>
       );
     }
   }

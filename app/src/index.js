@@ -4,6 +4,7 @@ import './App.css';
 import Layout from './components/Layout';
 import Metamask from './components/Metamask';
 import reportWebVitals from './reportWebVitals';
+import 'semantic-ui-css/semantic.min.css'
 
 ReactDOM.render(
   <React.StrictMode>
