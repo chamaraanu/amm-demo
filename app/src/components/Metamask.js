@@ -22,7 +22,7 @@ class Metamask extends Component {
     const balanceInEther = ethers.utils.formatEther(balance);
     this.setState({ selectedAddress: accounts[0], balance: balanceInEther })
 
-    const erc20Address = '0x7AFd8dEA4CCD6d26222920b428a6feB6d4AA8E60';
+    const erc20Address = '0x0591Fe8CFEb86072ee4dbD1Cd3c13F0fdEaA3548';
     const erc20Contract = Token(erc20Address);
     const erc20Symbol = await erc20Contract.symbol();
     const erc20Balance  =  await erc20Contract.balanceOf(accounts[0]);

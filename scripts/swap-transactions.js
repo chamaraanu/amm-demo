@@ -7,9 +7,9 @@ async function main() {
 
     const Token = await hre.ethers.getContractFactory("Token");
     const toToken = await Token.attach(process.env.USDC);
-    const fromToken = await Token.attach(process.env.LINK);
+    const fromToken = await Token.attach(process.env.SCMC);
 
-    amount1 = ethers.utils.parseUnits('0.0001', process.env.DECIMALS);
+    amount1 = ethers.utils.parseUnits('0.1', process.env.DECIMALS);
     await fromToken.connect(signer1).approve(swapTokens.address, amount1);
     await swapTokens.connect(signer1).swapExactInputSingle(amount1, fromToken.address, toToken.address, {gasLimit: 3000000});
 }

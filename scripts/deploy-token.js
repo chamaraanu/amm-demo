@@ -9,7 +9,7 @@ async function main() {
     process.env.NEW_TOKEN_NAME, 
     process.env.NEW_TOKEN_SYMBOL, 
     process.env.DECIMALS,
-    1000, 
+    process.env.AMOUNT, 
     owner.address 
     /*, {gasPrice: 30000000000, gasLimit: 1000000, nonce: 1311}*/
   );

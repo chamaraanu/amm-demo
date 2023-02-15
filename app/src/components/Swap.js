@@ -17,8 +17,8 @@ class Swap extends Component {
         event.preventDefault();
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const swapAddress = '0xbDac982ccB82f9382611888d610de9516A26f273'
-        const fromAddress = '0x7AFd8dEA4CCD6d26222920b428a6feB6d4AA8E60'
-        const toAddress = '0xa3f3d8c3754CF6Aa25A0d2315F9ed4aE2A48E9c7'
+        const fromAddress = '0x0591Fe8CFEb86072ee4dbD1Cd3c13F0fdEaA3548'
+        const toAddress = '0x07865c6E87B9F70255377e024ace6630C1Eaa37F'
         const swapContract = new ethers.Contract(
             swapAddress,
             SwapTokens.abi,
@@ -28,10 +28,12 @@ class Swap extends Component {
         const fromTokenName = await fromToken.name();
         const toToken = Token(toAddress);
         const toTokenName = await toToken.name();
-        this.setState({ fromTokenName: fromTokenName, toTokenName: toTokenName })
+        const toTokenDecimals = await toToken.decimals();
+        this.setState({ toTokenDecimals: toTokenDecimals})
+        
 
         const signer = provider.getSigner()
-        const amount1 = ethers.utils.parseUnits(this.state.value, 18)
+        const amount1 = ethers.utils.parseUnits(this.state.value, 8)
 
         try {
             await fromToken.connect(signer).approve(swapAddress, amount1);
@@ -49,9 +51,11 @@ class Swap extends Component {
 
         const handleEvent = (from, to, amount) => {
             const amountString = amount.toString();
+            // const amountInt = ethers.utils.parseUnits(amount, toTokenDecimals)
             console.log({"Event is": from, to, amountString})
 
-            this.setState({swappedFrom: from, swappedTo: to, swapAmount: amountString})
+            this.setState({ fromTokenName: fromTokenName, toTokenName: toTokenName })
+            this.setState({swapAmount: amountString})
 
         }
 
