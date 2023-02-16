@@ -9,7 +9,7 @@ import 'semantic-ui-css/semantic.min.css'
 ReactDOM.render(
   <React.StrictMode>
     <Layout>
-    <Metamask />
+      <Metamask />
     </Layout>
   </React.StrictMode>,
   document.getElementById('root')

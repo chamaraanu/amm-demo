@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Form, Input, Message, Button } from 'semantic-ui-react'
 
+import { ERC20_FROM_TOKEN_ADDRESS, ERC20_TO_TOKEN_ADDRESS, SWAP_ADDRESS } from '../constants/constants'
+
 import { ethers } from 'ethers'
 import Token from './token'
 import SwapTokens from '../contracts/contracts/SwapTokens.sol/SwapTokens.json'
@@ -16,9 +18,9 @@ class Swap extends Component {
     onSubmit = async (event) => {
         event.preventDefault();
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const swapAddress = '0xbDac982ccB82f9382611888d610de9516A26f273'
-        const fromAddress = '0x0591Fe8CFEb86072ee4dbD1Cd3c13F0fdEaA3548'
-        const toAddress = '0x07865c6E87B9F70255377e024ace6630C1Eaa37F'
+        const swapAddress = SWAP_ADDRESS
+        const fromAddress = ERC20_FROM_TOKEN_ADDRESS
+        const toAddress = ERC20_TO_TOKEN_ADDRESS
         const swapContract = new ethers.Contract(
             swapAddress,
             SwapTokens.abi,
