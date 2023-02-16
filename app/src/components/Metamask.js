@@ -1,68 +1,62 @@
-import React, { Component } from 'react';
-import { Button } from "semantic-ui-react";
-import { ERC20_FROM_TOKEN_ADDRESS, ERC20_TO_TOKEN_ADDRESS } from '../constants/constants';
-
-import Swap from './Swap';
-
-import { ethers } from "ethers";
-import Token from "./token";
-import Layout from './Layout';
+import React, { Component } from 'react'
+import { Header, Button, Label, Message } from 'semantic-ui-react'
+import Swap from './Swap'
+import { ethers } from 'ethers'
+import Layout from './Layout'
 
 class Metamask extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.state = {
-    };
+    this.state = {}
   }
 
   async connectToMetamask() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const accounts = await provider.send("eth_requestAccounts", []);
-    const balance = await provider.getBalance(accounts[0]);
-    const balanceInEther = ethers.utils.formatEther(balance);
+    const accounts = await provider.send('eth_requestAccounts', [])
+    const balance = await provider.getBalance(accounts[0])
+    const balanceInEther = ethers.utils.formatEther(balance)
     this.setState({ selectedAddress: accounts[0], balance: balanceInEther })
 
-    const erc20Address = ERC20_FROM_TOKEN_ADDRESS;
-    const erc20Contract = Token(erc20Address);
-    const erc20Symbol = await erc20Contract.symbol();
-    const erc20Balance  =  await erc20Contract.balanceOf(accounts[0]);
-    const erc20Decimals = await erc20Contract.decimals();
-    
-    const formattedErc20Balance = ethers.utils.formatUnits(erc20Balance, erc20Decimals);
-    this.setState({ selectedAddress: accounts[0], erc20Balance: formattedErc20Balance })
-    this.setState({ erc20Symbol: erc20Symbol })
+    this.setState({
+      selectedAddress: accounts[0],
+    })
   }
 
   renderMetamask() {
     if (!this.state.selectedAddress) {
       return (
-        <Button
-         onClick={() => this.connectToMetamask()}>Connect to Metamask</Button>
+        <div>
+          <p></p>
+          <Message>
+            <Header as="h1">Connect Your Wallet</Header>
+            <Button primary onClick={() => this.connectToMetamask()}>Connect</Button>
+          </Message>
+        </div>
       )
     } else {
       return (
         <Layout>
-        <div>
-          <h>Welcome {this.state.selectedAddress}</h>
-          <p>Your ETH Balance is: {this.state.balance}</p>
-          <p>Your {this.state.erc20Symbol} Balance is: {this.state.erc20Balance}</p>
           <div>
-            <Swap />
+            <p></p>
+            <Message>
+              <Header as="h1">Welcome {this.state.selectedAddress}</Header>
+              <Header as="h4">Your ETH Balance is: {this.state.balance}</Header>
+            </Message>
+            <Message>
+              <div>
+                <Swap />
+              </div>
+            </Message>
           </div>
-        </div>
         </Layout>
-      );
+      )
     }
   }
 
   render() {
-    return(
-      <div>
-        {this.renderMetamask()}
-      </div>
-    )
+    return <div>{this.renderMetamask()}</div>
   }
 }
 
-export default Metamask;
+export default Metamask
