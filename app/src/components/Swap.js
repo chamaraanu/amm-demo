@@ -1,12 +1,9 @@
 import React, { Component } from 'react'
 import { Form, Input, Message, Button } from 'semantic-ui-react'
-
 import { ERC20_FROM_TOKEN_ADDRESS, ERC20_TO_TOKEN_ADDRESS, SWAP_ADDRESS } from '../constants/constants'
-
 import { ethers } from 'ethers'
 import Token from './token'
 import SwapTokens from '../contracts/contracts/SwapTokens.sol/SwapTokens.json'
-import Layout from './Layout'
 
 class Swap extends Component {
     state = {
@@ -30,9 +27,9 @@ class Swap extends Component {
         const fromTokenName = await fromToken.name();
         const toToken = Token(toAddress);
         const toTokenName = await toToken.name();
+        const toTokenSymbol = await toToken.symbol();
         const toTokenDecimals = await toToken.decimals();
         this.setState({ toTokenDecimals: toTokenDecimals})
-        
 
         const signer = provider.getSigner()
         const amount1 = ethers.utils.parseUnits(this.state.value, 8)
@@ -53,20 +50,19 @@ class Swap extends Component {
 
         const handleEvent = (from, to, amount) => {
             const amountString = amount.toString();
-            // const amountInt = ethers.utils.parseUnits(amount, toTokenDecimals)
+            // const amountInt = ethers.utils.parseUnits(amountString, toTokenDecimals)
             console.log({"Event is": from, to, amountString})
 
             this.setState({ fromTokenName: fromTokenName, toTokenName: toTokenName })
             this.setState({swapAmount: amountString})
-
         }
 
         swapContract.on("swapOccurred", handleEvent);
+        //fire event to Metamask
     };
 
     render() {
         return (
-            <Layout>
             <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
                 <Form.Field>
                     <label>Amount to Swap</label>
@@ -79,15 +75,15 @@ class Swap extends Component {
                 <Button primary loading={this.state.loading}>
                     Swap Tokens
                 </Button>
-                <Form.Field>
+                <p></p>
+                
                     <Message>
                         <p>Swapped From: {this.state.fromTokenName}</p>
                         <p>Swapped To: {this.state.toTokenName}</p>
                         <p>Received: {this.state.swapAmount}</p>
                     </Message>
-                </Form.Field>
+                
             </Form>
-            </Layout>
         )
     }
 }
