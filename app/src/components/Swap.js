@@ -6,55 +6,48 @@ import Token from './token'
 import SwapTokens from '../contracts/contracts/SwapTokens.sol/SwapTokens.json'
 
 class Swap extends Component {
-    state = {
-        value: "",
-        errorMessage: "",
-        loading: false,
-    };
+    constructor(props) {
+        super(props)
+        this.state = {}
+        this.load()
+    }
+
+    fromAddress = ERC20_FROM_TOKEN_ADDRESS;
+    toAddress = ERC20_TO_TOKEN_ADDRESS;
+    swapAddress = SWAP_ADDRESS;
 
     onSubmit = async (event) => {
         event.preventDefault();
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const swapAddress = SWAP_ADDRESS
-        const fromAddress = ERC20_FROM_TOKEN_ADDRESS
-        const toAddress = ERC20_TO_TOKEN_ADDRESS
         const swapContract = new ethers.Contract(
-            swapAddress,
+            this.swapAddress,
             SwapTokens.abi,
             provider,
         );
-        const fromToken = Token(fromAddress)
-        const fromTokenName = await fromToken.name();
-        const toToken = Token(toAddress);
-        const toTokenName = await toToken.name();
-        const toTokenSymbol = await toToken.symbol();
+        const fromToken = Token(this.fromAddress)
+        const fromTokenDecimals = await fromToken.decimals();
+        const toToken = Token(this.toAddress);
         const toTokenDecimals = await toToken.decimals();
-        this.setState({ toTokenDecimals: toTokenDecimals})
 
         const signer = provider.getSigner()
-        const amount1 = ethers.utils.parseUnits(this.state.value, 8)
+        const amount1 = ethers.utils.parseUnits(this.state.value, fromTokenDecimals)
 
         try {
-            await fromToken.connect(signer).approve(swapAddress, amount1);
-            const res = await swapContract
+            await fromToken.connect(signer).approve(this.swapAddress, amount1);
+            await swapContract
                 .connect(signer)
-                .swapExactInputSingle(amount1, fromAddress, toAddress, {
+                .swapExactInputSingle(amount1, this.fromAddress, this.toAddress, {
                     gasLimit: 20000000,
                 })
-                this.setState({ res: res});
-                console.log(res);
         } catch (err) {
             this.setState({ errorMessage: err.message });
         }
         this.setState({ loading: false, value: "" });
 
         const handleEvent = (from, to, amount) => {
-            const amountString = amount.toString();
-            // const amountInt = ethers.utils.parseUnits(amountString, toTokenDecimals)
-            console.log({"Event is": from, to, amountString})
-
-            this.setState({ fromTokenName: fromTokenName, toTokenName: toTokenName })
-            this.setState({swapAmount: amountString})
+            this.load();
+            const amountInt = ethers.utils.formatUnits(amount, toTokenDecimals);
+            this.setState({ swapAmount: amountInt });
         }
 
         swapContract.on("swapOccurred", handleEvent);
@@ -63,28 +56,56 @@ class Swap extends Component {
 
     render() {
         return (
-            <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
-                <Form.Field>
-                    <label>Amount to Swap</label>
-                    <Input
-                        value={this.state.value}
-                        onChange={(event) => this.setState({ value: event.target.value })}
-                        labelPosition="right"
-                    />
-                </Form.Field>
-                <Button primary loading={this.state.loading}>
-                    Swap Tokens
-                </Button>
-                <p></p>
-                
+            <div>
+                <Message>
+                    <p>From {this.state.fromTokenSymbol} {this.state.fromTokenBalance}</p>
+                    <p>To {this.state.toTokenSymbol} {this.state.toTokenBalance}</p>
+                </Message>
+                <Form onSubmit={this.onSubmit} error={!!this.state.errorMessage}>
+                    <Form.Field>
+                        <label>Amount to Swap</label>
+                        <Input
+                            value={this.state.value}
+                            onChange={(event) => this.setState({ value: event.target.value })}
+                            labelPosition="center"
+                        />
+                    </Form.Field>
+                    <Button primary loading={this.state.loading}>
+                        Swap Tokens
+                    </Button>
+                    <p></p>
+
                     <Message>
-                        <p>Swapped From: {this.state.fromTokenName}</p>
-                        <p>Swapped To: {this.state.toTokenName}</p>
                         <p>Received: {this.state.swapAmount}</p>
                     </Message>
-                
-            </Form>
+
+                </Form>
+            </div>
         )
+    }
+
+    load = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send('eth_requestAccounts', []);
+
+        const fromToken = Token(this.fromAddress);
+        const fromTokenSymbol = await fromToken.symbol();
+        const fromTokenDecimals = await fromToken.decimals();
+        const fromTokenBalance = await fromToken.balanceOf(accounts[0]);
+        const formattedFromTokenBalance = ethers.utils.formatUnits(fromTokenBalance, fromTokenDecimals);
+
+        const toToken = Token(this.toAddress);
+        const toTokenSymbol = await toToken.symbol();
+        const toTokenDecimals = await toToken.decimals();
+        const toTokenBalance = await toToken.balanceOf(accounts[0]);
+        const formattedToTokenBalance = ethers.utils.formatUnits(toTokenBalance, toTokenDecimals);
+
+        this.setState({
+            fromTokenSymbol: fromTokenSymbol,
+            fromTokenBalance: formattedFromTokenBalance,
+            toTokenSymbol: toTokenSymbol,
+            toTokenBalance: formattedToTokenBalance
+        })
     }
 }
 
