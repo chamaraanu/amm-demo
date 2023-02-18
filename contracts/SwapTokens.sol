@@ -41,13 +41,22 @@ contract SwapTokens is ISwapTokens {
             });
 
         amountOut = swapRouter.exactInputSingle(params);
-        emit swapOccurred(inToken, outToken, amountOut);
+        emit inputSingleSwapOccurred(inToken, outToken, amountOut);
     }
 
     function swapExactOutputSingle(uint256 amountOut, uint256 amountInMaximum, address inToken, address outToken)
         external
         returns (uint256 amountIn)
     {
+        TransferHelper.safeTransferFrom(
+            inToken,
+            msg.sender,
+            address(this),
+            amountInMaximum
+        );
+
+        TransferHelper.safeApprove(inToken, address(swapRouter), amountInMaximum);
+
         ISwapRouter.ExactOutputSingleParams memory params = ISwapRouter
             .ExactOutputSingleParams({
                 tokenIn: inToken,
@@ -66,5 +75,6 @@ contract SwapTokens is ISwapTokens {
             IERC20(inToken).approve(address(swapRouter), 0);
             IERC20(inToken).transfer(address(this), amountInMaximum - amountIn);
         }
+        emit outputSingleSwapOccurred(inToken, outToken, amountIn);
     }
 }

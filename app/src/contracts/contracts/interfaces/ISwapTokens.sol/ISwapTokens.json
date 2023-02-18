@@ -25,7 +25,32 @@
           "type": "uint256"
         }
       ],
-      "name": "swapOccurred",
+      "name": "inputSingleSwapOccurred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "outputSingleSwapOccurred",
       "type": "event"
     }
   ],

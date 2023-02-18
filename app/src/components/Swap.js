@@ -50,7 +50,7 @@ class Swap extends Component {
             this.setState({ swapAmount: amountInt });
         }
 
-        swapContract.on("swapOccurred", handleEvent);
+        swapContract.on("inputSingleSwapOccurred", handleEvent);
         //fire event to Metamask
     };
 
